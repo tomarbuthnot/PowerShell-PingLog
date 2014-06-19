@@ -10,7 +10,9 @@ Function Powershell-PingLog {
     http://link.com
                 
 .NOTES  
-    Version:		0.8
+    Version:		0.81
+
+    History: 0.81: Fixed logic to check free disk space on each loop before writing log to avoid filling disk
   
     Author/Copyright:	Copyright Tom Arbuthnot - All Rights Reserved
     
@@ -232,6 +234,11 @@ Function Powershell-PingLog {
           
           $loopstarttime = Get-Date
           
+          # Check Disk Space before Next loop
+          $Disk = Get-WmiObject -Class Win32_LogicalDisk -Filter 'DriveType = 3' | Where-Object {$_.DeviceID -eq "$DiskToLogTo"}
+          $FreeSpace = $disk.FreeSpace / 1GB
+          Write-Host "Free Space on Logging drive is $FreeSpace"
+
           Foreach ($Instance in $IPCollection)
           {
             
